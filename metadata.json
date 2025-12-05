@@ -1,0 +1,5 @@
+{
+  "name": "DamageAI - Product Simulator",
+  "description": "An AI-powered application that takes pristine product images and realistically simulates damage, wear, and tear while maintaining product fidelity using Google Gemini's vision capabilities.",
+  "requestFramePermissions": []
+}
