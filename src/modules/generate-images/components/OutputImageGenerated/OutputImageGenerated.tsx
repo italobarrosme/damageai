@@ -88,8 +88,8 @@ export function OutputImageGenerated({
                 Ready to Generate
               </p>
               <p className="text-sm text-slate-600 mt-2 max-w-xs">
-                Upload an image and configure damage settings to see the
-                results here.
+                Upload an image and configure damage settings to see the results
+                here.
               </p>
             </>
           )}

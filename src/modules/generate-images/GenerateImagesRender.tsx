@@ -43,7 +43,7 @@ export default function GenerateImagesRender() {
       const result = await generateDamagedProduct(
         state.originalImage,
         state.selectedDamage,
-        state.customPrompt
+        state.customPrompt,
       );
       setState((prev) => ({
         ...prev,

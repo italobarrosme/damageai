@@ -1,17 +1,29 @@
-pre-commit:
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://evilmartians.github.io/lefthook/configuration/
+#
+pre-push:
+  parallel: true
   commands:
-    check:
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
-      run: npx @biomejs/biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
-      stage_fixed: true
+    packages-audit:
+      run: npm run build
 
 commit-msg:
   commands:
-    lint:
+    commitlint:
       run: npx commitlint --edit {1}
 
-pre-push:
+pre-commit:
+  parallel: true
   commands:
-    check-all:
-      run: npx @biomejs/biome check --colors=off .
+    biome-check:
+      glob: "src/**/*.{js,ts,jsx,tsx,css,scss,json,jsonc}"
+      run: npx @biomejs/biome check --write {staged_files}
+      stage_fixed: true
+      skip: []
 
+    tests:
+      glob: "src/**/*.{js,ts,jsx,tsx}"
+      run: npm run test:deploy --findRelatedTests --bail
+      skip: []

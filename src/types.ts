@@ -20,7 +20,7 @@ export enum DamageType {
   MOISTURE_EXPOSED = "Exposed to excessive moisture",
   TEMPERATURE_DAMAGE = "Damaged by extreme temperature",
   BROKEN_INTERNAL = "Broken internal components",
-  PRODUCT_EXPIRED = "Product expired due to delivery delay"
+  PRODUCT_EXPIRED = "Product expired due to delivery delay",
 }
 
 export interface AppState {
