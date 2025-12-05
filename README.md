@@ -77,10 +77,10 @@ docker build -t damageai:latest .
 ### Run container
 
 ```bash
-docker run -p 80:80 damageai:latest
+docker run -p 4321:4321 damageai:latest
 ```
 
-The application will be available at `http://localhost`
+The application will be available at `http://localhost:4321`
 
 ## 🔄 CI/CD
 
