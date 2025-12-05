@@ -1,6 +1,6 @@
 import { Button } from "@/modules/generate-images/components/Button";
 import { Upload, Image as ImageIcon, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ImageUploaderProps {
   onImageSelect: (base64: string) => void;
@@ -16,19 +16,22 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file");
-      return;
-    }
+  const handleFile = useCallback(
+    (file: File) => {
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file");
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      onImageSelect(result);
-    };
-    reader.readAsDataURL(file);
-  };
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        onImageSelect(result);
+      };
+      reader.readAsDataURL(file);
+    },
+    [onImageSelect],
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
@@ -53,6 +56,33 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     e.preventDefault();
     setIsDragging(false);
   };
+
+  const handlePaste = useCallback(
+    (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.startsWith("image/")) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            handleFile(file);
+          }
+          break;
+        }
+      }
+    },
+    [handleFile],
+  );
+
+  useEffect(() => {
+    document.addEventListener("paste", handlePaste);
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, [handlePaste]);
 
   if (currentImage) {
     return (
@@ -115,7 +145,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       </h3>
 
       <p className="text-sm text-slate-400 text-center max-w-xs">
-        Drag & drop or click to upload a pristine product photo
+        Drag & drop, click to upload, or paste (Ctrl+V) a pristine product photo
       </p>
 
       <div className="mt-6 flex items-center gap-2 text-xs text-slate-500">

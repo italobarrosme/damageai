@@ -1,5 +1,6 @@
-import { Zap, Download, AlertTriangle, RefreshCw } from "lucide-react";
+import { Download, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/modules/generate-images/components/Button";
+import { LoadingSpinner } from "@/modules/common/Loading";
 
 interface OutputImageGeneratedProps {
   generatedImage: string | null;
@@ -70,14 +71,7 @@ export function OutputImageGenerated({
         <div className="flex flex-col items-center text-slate-500 p-8 text-center">
           {isGenerating ? (
             <div className="space-y-4">
-              <div className="relative w-24 h-24 mx-auto">
-                <div className="absolute inset-0 rounded-full border-4 border-slate-800"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
-                <Zap
-                  className="absolute inset-0 m-auto text-indigo-500 animate-pulse"
-                  size={32}
-                />
-              </div>
+              <LoadingSpinner />
               <p className="animate-pulse text-indigo-400 font-medium">
                 Processing pixels...
               </p>
