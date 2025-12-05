@@ -1,0 +1,2 @@
+export { OutputImageGenerated } from "./OutputImageGenerated";
+

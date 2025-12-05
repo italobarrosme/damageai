@@ -28,6 +28,6 @@ export interface AppState {
   generatedImage: string | null; // Base64
   isGenerating: boolean;
   error: string | null;
-  selectedDamage: DamageType;
+  selectedDamage: DamageType | null;
   customPrompt: string;
 }
