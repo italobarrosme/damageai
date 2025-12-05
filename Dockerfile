@@ -32,4 +32,5 @@ EXPOSE 4322
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:4322/ || exit 1
 
-CMD ["vite", "preview", "--host", "0.0.0.0", "--port", "4322"]
+  CMD ["vite", "preview", "--host", "0.0.0.0", "--port", "4322", "--strictPort"]
+
