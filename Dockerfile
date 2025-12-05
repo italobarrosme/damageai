@@ -22,7 +22,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Configuração nginx para SPA
 RUN echo 'server { \
-    listen 4321; \
+    listen 4322; \
     server_name _; \
     root /usr/share/nginx/html; \
     index index.html; \
@@ -31,7 +31,7 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-EXPOSE 4321
+EXPOSE 4322
 
 CMD ["nginx", "-g", "daemon off;"]
 
