@@ -16,30 +16,24 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM node:20-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Configuração nginx para SPA
-RUN echo 'server { \
-    listen 4322; \
-    listen [::]:4322; \
-    server_name _; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-    \
-    location /health { \
-        access_log off; \
-        return 200 "healthy\n"; \
-        add_header Content-Type text/plain; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Copia package.json para instalar dependências de produção
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/dist ./dist
 
+# Instala apenas vite para o preview (mais leve que serve)
+RUN npm install -g vite
+
+# Expõe porta 4322
 EXPOSE 4322
 
-CMD ["nginx", "-g", "daemon off;"]
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4322/ || exit 1
+
+# Serve os arquivos estáticos usando vite preview na porta 4322
+CMD ["vite", "preview", "--host", "0.0.0.0", "--port", "4322"]
 
