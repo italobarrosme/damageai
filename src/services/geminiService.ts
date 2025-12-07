@@ -1,32 +1,69 @@
 import { GoogleGenAI } from "@google/genai";
 import type { DamageType } from "@/types";
-import { buildDamagePrompt } from "@/modules/ai";
+import {
+  buildDamagePrompt,
+  compressImage,
+  imageCache,
+} from "@/modules/ai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
  * Generates a damaged version of the provided image.
  *
+ * 🔹 Cost Optimization Features:
+ * - Image compression before sending (reduces tokens)
+ * - Cache system to avoid duplicate requests
+ * - Optimized prompts (fewer tokens)
+ *
  * @param base64Image The source image in base64 format (data:image/...)
  * @param damageType The selected preset damage type
  * @param customInstruction Optional additional instructions
+ * @param useCache Whether to use cache (default: true)
+ * @param compress Whether to compress image before sending (default: true)
  * @returns The generated image as a base64 string
  */
 export const generateDamagedProduct = async (
   base64Image: string,
   damageType: DamageType,
   customInstruction: string = "",
+  useCache: boolean = true,
+  compress: boolean = true,
 ): Promise<string> => {
   try {
+    // Check cache first to avoid API call
+    if (useCache) {
+      const cached = imageCache.get(
+        base64Image,
+        damageType,
+        customInstruction,
+      );
+      if (cached) {
+        return cached;
+      }
+    }
+
+    // Compress image to reduce size and costs
+    let processedImage = base64Image;
+    if (compress) {
+      try {
+        processedImage = await compressImage(processedImage, 1024, 1024, 0.85);
+      } catch (error) {
+        console.warn("Image compression failed, using original:", error);
+        // Continue with original image if compression fails
+      }
+    }
+
     // Clean base64 string if it contains metadata prefix
-    const base64Data = base64Image.split(",")[1] || base64Image;
+    const base64Data =
+      processedImage.split(",")[1] || processedImage;
     const mimeType =
-      base64Image.substring(
-        base64Image.indexOf(":") + 1,
-        base64Image.indexOf(";"),
+      processedImage.substring(
+        processedImage.indexOf(":") + 1,
+        processedImage.indexOf(";"),
       ) || "image/jpeg";
 
-    // Build prompt using the AI module
+    // Build optimized prompt
     const prompt = buildDamagePrompt(damageType, customInstruction);
 
     const response = await ai.models.generateContent({
@@ -55,7 +92,20 @@ export const generateDamagedProduct = async (
 
     for (const part of parts) {
       if (part.inlineData?.data) {
-        return `data:image/png;base64,${part.inlineData.data}`;
+        const generatedImage = `data:image/png;base64,${part.inlineData.data}`;
+
+        // Cache the result
+        if (useCache) {
+          imageCache.set(
+            base64Image,
+            damageType,
+            customInstruction,
+            generatedImage,
+            prompt,
+          );
+        }
+
+        return generatedImage;
       }
     }
 

@@ -1,14 +1,20 @@
 import type { DamageType } from "@/types";
 
 /**
- * Builds the damage simulation prompt for the AI model.
+ * Builds an optimized damage simulation prompt for the AI model.
  *
- * This function constructs a detailed prompt that instructs the AI to simulate
+ * This function constructs a concise prompt that instructs the AI to simulate
  * damage on a product while maintaining its original identity, shape, and perspective.
+ *
+ * 🔹 Cost Optimization Techniques Applied:
+ * - Removed redundant instructions
+ * - Used concise, direct language
+ * - Eliminated unnecessary whitespace
+ * - Combined related instructions
  *
  * @param damageType - The type of damage to simulate
  * @param customInstruction - Optional additional instructions for the damage
- * @returns The complete prompt string ready to be sent to the AI model
+ * @returns The optimized prompt string ready to be sent to the AI model
  *
  * @example
  * ```ts
@@ -22,16 +28,15 @@ export const buildDamagePrompt = (
   damageType: DamageType,
   customInstruction: string = "",
 ): string => {
-  const damageInstruction = `The goal is to simulate damage to the product shown while STRICTLY maintaining the product's original identity, shape, and perspective. 
-    The background should remain largely unchanged.
-    Apply the following damage effect: ${damageType}.
-    ${customInstruction ? `Additional details: ${customInstruction}` : ""}
-    
-    Ensure the damage looks photorealistic. Do not replace the object.`;
+  // Optimized: Removed redundant base prompt, combined instructions
+  const instructions = [
+    `Simulate ${damageType} damage`,
+    "Maintain product identity, shape, perspective, and background",
+    "Make damage photorealistic",
+    customInstruction?.trim() || "",
+  ]
+    .filter((instruction) => instruction.length > 0)
+    .join(". ");
 
-  const basePrompt = `Edit this image. Do not make any changes to the photo, simply move the object freely downwards.
-    
-    ${damageType ? `${damageInstruction}` : ""}`;
-
-  return basePrompt.trim();
+  return `${instructions}.`;
 };
