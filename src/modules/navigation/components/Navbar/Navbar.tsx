@@ -11,7 +11,7 @@ export function Navbar() {
           </h1>
         </div>
         <div className="text-sm text-slate-400 hidden sm:block">
-          Product Damage Simulator
+          Product Damage Simulator v1.1.0
         </div>
       </div>
     </header>
