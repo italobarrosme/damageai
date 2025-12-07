@@ -1,6 +1,7 @@
-import { Download, AlertTriangle, RefreshCw } from "lucide-react";
+import { Download, AlertTriangle, RefreshCw, Check } from "lucide-react";
 import { Button } from "@/modules/generate-images/components/Button";
 import { LoadingSpinner } from "@/modules/common/Loading";
+import { useCopyImageToClipboard } from "@/modules/generate-images/hooks";
 
 interface OutputImageGeneratedProps {
   generatedImage: string | null;
@@ -17,6 +18,10 @@ export function OutputImageGenerated({
   onDownload,
   onErrorDismiss,
 }: OutputImageGeneratedProps) {
+  const { isCopied } = useCopyImageToClipboard(
+    generatedImage,
+    !!generatedImage,
+  );
   if (error) {
     return (
       <div className="h-full">
@@ -54,6 +59,14 @@ export function OutputImageGenerated({
                 Download
               </Button>
             </div>
+            {isCopied && (
+              <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 bg-green-950/70 backdrop-blur-md border border-green-900/50 rounded-lg animate-in fade-in slide-in-from-top-2">
+                <Check size={16} className="text-green-400" />
+                <span className="text-xs font-medium text-green-200">
+                  Copied to clipboard!
+                </span>
+              </div>
+            )}
             <div className="absolute bottom-1 left-1 right-1 p-3 bg-red-950/70 backdrop-blur-md border-t border-red-900/50 rounded-b-xl">
               <p className="text-xs text-center font-mono text-red-200">
                 DAMAGED OUTPUT
