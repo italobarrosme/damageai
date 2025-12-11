@@ -27,11 +27,26 @@ export enum DamageType {
   SIDE_DENT = "Side dent on the product",
 }
 
+export enum AngleType {
+  ORIGINAL = "Keep original angle",
+  FRONT = "Front view",
+  SIDE = "Side view",
+  TOP = "Top view",
+  BOTTOM = "Bottom view",
+  ANGLE_45_UP = "45° angle from above",
+  ANGLE_45_DOWN = "45° angle from below",
+  THREE_QUARTER = "Three-quarter view",
+  BACK = "Back view",
+  LOW_ANGLE = "Low angle looking up",
+  HIGH_ANGLE = "High angle looking down",
+}
+
 export interface AppState {
   originalImage: string | null; // Base64
   generatedImage: string | null; // Base64
   isGenerating: boolean;
   error: string | null;
   selectedDamage: DamageType | null;
+  selectedAngle: AngleType | null;
   customPrompt: string;
 }

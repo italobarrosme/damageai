@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import type { DamageType } from "@/types";
+import type { DamageType, AngleType } from "@/types";
 import {
   buildDamagePrompt,
   compressImage,
@@ -19,6 +19,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
  * @param base64Image The source image in base64 format (data:image/...)
  * @param damageType The selected preset damage type
  * @param customInstruction Optional additional instructions
+ * @param angleType Optional camera angle change
  * @param useCache Whether to use cache (default: true)
  * @param compress Whether to compress image before sending (default: true)
  * @returns The generated image as a base64 string
@@ -27,16 +28,20 @@ export const generateDamagedProduct = async (
   base64Image: string,
   damageType: DamageType,
   customInstruction: string = "",
+  angleType: AngleType | null = null,
   useCache: boolean = true,
   compress: boolean = true,
 ): Promise<string> => {
   try {
+    const angleTypeKey = angleType || "";
+    
     // Check cache first to avoid API call
     if (useCache) {
       const cached = imageCache.get(
         base64Image,
         damageType,
         customInstruction,
+        angleTypeKey,
       );
       if (cached) {
         return cached;
@@ -64,7 +69,7 @@ export const generateDamagedProduct = async (
       ) || "image/jpeg";
 
     // Build optimized prompt
-    const prompt = buildDamagePrompt(damageType, customInstruction);
+    const prompt = buildDamagePrompt(damageType, customInstruction, angleType);
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-image",
@@ -100,6 +105,7 @@ export const generateDamagedProduct = async (
             base64Image,
             damageType,
             customInstruction,
+            angleTypeKey,
             generatedImage,
             prompt,
           );

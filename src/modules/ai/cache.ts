@@ -17,6 +17,7 @@ interface CacheKey {
   imageHash: string;
   damageType: string;
   customInstruction: string;
+  angleType: string;
 }
 
 class ImageCache {
@@ -40,7 +41,7 @@ class ImageCache {
    * Creates a cache key from the request parameters.
    */
   private createCacheKey(key: CacheKey): string {
-    return `${key.imageHash}_${key.damageType}_${key.customInstruction}`;
+    return `${key.imageHash}_${key.damageType}_${key.customInstruction}_${key.angleType}`;
   }
 
   /**
@@ -49,18 +50,21 @@ class ImageCache {
    * @param base64Image - Original image
    * @param damageType - Type of damage
    * @param customInstruction - Custom instruction
+   * @param angleType - Camera angle type
    * @returns Cached image if found and valid, null otherwise
    */
   get(
     base64Image: string,
     damageType: string,
     customInstruction: string = "",
+    angleType: string = "",
   ): string | null {
     const imageHash = this.generateImageHash(base64Image);
     const cacheKey = this.createCacheKey({
       imageHash,
       damageType,
       customInstruction,
+      angleType,
     });
 
     const entry = this.cache.get(cacheKey);
@@ -85,6 +89,7 @@ class ImageCache {
    * @param base64Image - Original image
    * @param damageType - Type of damage
    * @param customInstruction - Custom instruction
+   * @param angleType - Camera angle type
    * @param generatedImage - Generated image to cache
    * @param prompt - Prompt used for generation
    */
@@ -92,6 +97,7 @@ class ImageCache {
     base64Image: string,
     damageType: string,
     customInstruction: string,
+    angleType: string,
     generatedImage: string,
     prompt: string,
   ): void {
@@ -100,6 +106,7 @@ class ImageCache {
       imageHash,
       damageType,
       customInstruction,
+      angleType,
     });
 
     this.cache.set(cacheKey, {

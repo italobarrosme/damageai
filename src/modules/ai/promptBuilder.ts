@@ -1,4 +1,5 @@
 import type { DamageType } from "@/types";
+import { AngleType } from "@/types";
 
 /**
  * Builds an optimized damage simulation prompt for the AI model.
@@ -14,24 +15,30 @@ import type { DamageType } from "@/types";
  *
  * @param damageType - The type of damage to simulate
  * @param customInstruction - Optional additional instructions for the damage
+ * @param angleType - Optional camera angle or position change
  * @returns The optimized prompt string ready to be sent to the AI model
  *
  * @example
  * ```ts
  * const prompt = buildDamagePrompt(
  *   DamageType.BROKEN_SEAL,
- *   "Make it look like it was tampered with"
+ *   "Make it look like it was tampered with",
+ *   AngleType.SIDE
  * );
  * ```
  */
 export const buildDamagePrompt = (
   damageType: DamageType,
   customInstruction: string = "",
+  angleType: AngleType | null = null,
 ): string => {
   // Optimized: Removed redundant base prompt, combined instructions
   const instructions = [
+    "Maintain product identity, shape, and all visual details",
+    angleType && angleType !== AngleType.ORIGINAL
+      ? `Change camera angle or object position to ${angleType.toLowerCase()}, preserving all product details, damage characteristics, textures, and materials exactly as they appear`
+      : "Maintain original camera perspective",
     `Simulate ${damageType} damage`,
-    "Maintain product identity, shape, perspective, and background",
     "Make damage photorealistic",
     customInstruction?.trim() || "",
   ]

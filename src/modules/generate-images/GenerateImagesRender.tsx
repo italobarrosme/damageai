@@ -11,6 +11,7 @@ export default function GenerateImagesRender() {
     isGenerating: false,
     error: null,
     selectedDamage: null,
+    selectedAngle: null,
     customPrompt: "",
   });
 
@@ -30,11 +31,12 @@ export default function GenerateImagesRender() {
       isGenerating: false,
       error: null,
       selectedDamage: null,
+      selectedAngle: null,
       customPrompt: "",
     });
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (ignoreCache: boolean = false) => {
     if (!state.originalImage) return;
 
     setState((prev) => ({ ...prev, isGenerating: true, error: null }));
@@ -44,6 +46,8 @@ export default function GenerateImagesRender() {
         state.originalImage,
         state.selectedDamage,
         state.customPrompt,
+        state.selectedAngle,
+        !ignoreCache, // useCache = !ignoreCache
       );
       setState((prev) => ({
         ...prev,
@@ -63,6 +67,10 @@ export default function GenerateImagesRender() {
     }
   };
 
+  const handleRetry = async () => {
+    await handleGenerate(true); // ignoreCache = true
+  };
+
   const handleDownload = () => {
     if (state.generatedImage) {
       const link = document.createElement("a");
@@ -80,17 +88,23 @@ export default function GenerateImagesRender() {
       <UploadControls
         originalImage={state.originalImage}
         selectedDamage={state.selectedDamage}
+        selectedAngle={state.selectedAngle}
         customPrompt={state.customPrompt}
         isGenerating={state.isGenerating}
+        hasGeneratedImage={!!state.generatedImage}
         onImageSelect={handleImageSelect}
         onClear={handleClear}
         onDamageSelect={(damage) =>
           setState((prev) => ({ ...prev, selectedDamage: damage }))
         }
+        onAngleSelect={(angle) =>
+          setState((prev) => ({ ...prev, selectedAngle: angle }))
+        }
         onCustomPromptChange={(prompt) =>
           setState((prev) => ({ ...prev, customPrompt: prompt }))
         }
-        onGenerate={handleGenerate}
+        onGenerate={() => handleGenerate(false)}
+        onRetry={handleRetry}
       />
 
       {/* Right Column: Output */}
